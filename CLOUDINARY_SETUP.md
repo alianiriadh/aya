@@ -1,6 +1,7 @@
 # Cloudinary Setup Guide
 
 ## Why Cloudinary?
+
 ✅ **25GB free storage**
 ✅ **Videos stored permanently** (never deleted)
 ✅ **No server needed** (cloud-based)
@@ -24,11 +25,13 @@
 From your Cloudinary Dashboard:
 
 ### Cloud Name
+
 - Look at the top of the dashboard
 - You'll see: **"Cloud name: xyz123"**
 - Copy this name
 
 ### Create Upload Preset
+
 1. Go to Settings (gear icon) → Upload tab
 2. Scroll down to "Upload presets"
 3. Click "Add upload preset"
@@ -47,14 +50,15 @@ From your Cloudinary Dashboard:
 Open `admin.html` and find line ~213, update these values:
 
 ```javascript
-const CLOUDINARY_CLOUD_NAME = 'YOUR_CLOUD_NAME'; // Replace with your cloud name
-const CLOUDINARY_UPLOAD_PRESET = 'content_hub_videos'; // Your upload preset name
+const CLOUDINARY_CLOUD_NAME = "YOUR_CLOUD_NAME"; // Replace with your cloud name
+const CLOUDINARY_UPLOAD_PRESET = "content_hub_videos"; // Your upload preset name
 ```
 
 For example:
+
 ```javascript
-const CLOUDINARY_CLOUD_NAME = 'dxyz123abc';
-const CLOUDINARY_UPLOAD_PRESET = 'content_hub_videos';
+const CLOUDINARY_CLOUD_NAME = "dxyz123abc";
+const CLOUDINARY_UPLOAD_PRESET = "content_hub_videos";
 ```
 
 ---
@@ -90,6 +94,7 @@ Your app URL: `https://your-app.onrender.com`
 ## Free Tier Limits
 
 Cloudinary Free Tier includes:
+
 - ✅ 25GB storage
 - ✅ 25GB bandwidth/month
 - ✅ 10,000 transformations/month
@@ -102,16 +107,19 @@ Cloudinary Free Tier includes:
 ## Troubleshooting
 
 ### "Upload widget not appearing"
+
 - Make sure you saved the upload preset as **"Unsigned"**
 - Check browser console for errors
 - Verify cloud name and preset name are correct
 
 ### "Upload failed"
+
 - Check that upload preset is **unsigned**
 - Verify folder name matches preset configuration
 - Check file size (free tier has limits per upload)
 
 ### "Video not playing"
+
 - Cloudinary URLs are permanent and work everywhere
 - Make sure the URL starts with `https://res.cloudinary.com/`
 
@@ -130,12 +138,12 @@ Cloudinary Free Tier includes:
 
 ## Benefits of This Solution
 
-| Feature | Your Server | Cloudinary |
-|---------|------------|------------|
-| Storage | ❌ Deleted on restart | ✅ Permanent |
-| Size Limit | 500MB | 25GB total |
-| Bandwidth | Limited | 25GB/month |
-| CDN | No | ✅ Global CDN |
-| Cost | Free (Render) | Free (25GB) |
+| Feature    | Your Server           | Cloudinary    |
+| ---------- | --------------------- | ------------- |
+| Storage    | ❌ Deleted on restart | ✅ Permanent  |
+| Size Limit | 500MB                 | 25GB total    |
+| Bandwidth  | Limited               | 25GB/month    |
+| CDN        | No                    | ✅ Global CDN |
+| Cost       | Free (Render)         | Free (25GB)   |
 
 **Winner:** Cloudinary! 🎉
