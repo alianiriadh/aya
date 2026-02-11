@@ -290,12 +290,8 @@
         let embedUrl = video.url;
         let isDirectVideo =
           video.isUploaded ||
-          video.url.includes("streamable.com") ||
-          video.url.includes("gofile.io") ||
-          video.url.includes("pixeldrain.com") ||
-          video.url.includes("catbox.moe") ||
-          video.url.includes("imgur.com") ||
           video.url.includes("cloudinary.com") ||
+          video.url.includes("res.cloudinary.com") ||
           video.url.match(/\.(mp4|webm|ogg|mov)$/i);
 
         // Check if it's an uploaded video or external embed link
