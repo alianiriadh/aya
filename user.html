@@ -1,0 +1,390 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>مركز المحتوى - استكشف</title>
+    <link rel="stylesheet" href="styles.css" />
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+  </head>
+  <body>
+    <!-- Loading Screen -->
+    <div id="loadingScreen" class="loading-screen">
+      <div class="loading-spinner"></div>
+      <p class="loading-text">جاري تحميل المحتوى...</p>
+    </div>
+
+    <nav class="navbar">
+      <div class="nav-container">
+        <h1 class="logo">مركز المحتوى</h1>
+        <div class="nav-actions">
+          <button class="nav-link active" data-view="all">الكل</button>
+          <button class="nav-link" data-view="articles">المقالات</button>
+          <button class="nav-link" data-view="videos">الفيديوهات</button>
+          <button id="logoutBtn" class="btn-secondary">تسجيل الخروج</button>
+        </div>
+      </div>
+    </nav>
+
+    <header class="hero">
+      <div class="hero-content">
+        <h1 class="hero-title">اكتشف محتوى مميز</h1>
+        <p class="hero-subtitle">استكشف مقالات وفيديوهات مختارة من أفضل صناع المحتوى</p>
+        <div class="search-container">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"></circle>
+            <path d="m21 21-4.35-4.35"></path>
+          </svg>
+          <input type="text" id="searchInput" placeholder="ابحث عن المقالات والفيديوهات..." />
+        </div>
+      </div>
+    </header>
+
+    <main class="user-container">
+      <aside class="filter-sidebar">
+        <h3>التصنيفات</h3>
+        <div class="category-filters">
+          <button class="category-btn active" data-category="all">الكل</button>
+          <button class="category-btn" data-category="تكنولوجيا">تكنولوجيا</button>
+          <button class="category-btn" data-category="أعمال">أعمال</button>
+          <button class="category-btn" data-category="علوم">علوم</button>
+          <button class="category-btn" data-category="تعليم">تعليم</button>
+          <button class="category-btn" data-category="ترفيه">ترفيه</button>
+          <button class="category-btn" data-category="نمط حياة">نمط حياة</button>
+          <button class="category-btn" data-category="صحة">صحة</button>
+        </div>
+      </aside>
+
+      <div class="content-area">
+        <div class="content-header">
+          <h2 id="sectionTitle">جميع المحتويات</h2>
+          <div class="view-toggle">
+            <button class="view-btn active" data-layout="grid">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="3" width="7" height="7"></rect>
+                <rect x="14" y="3" width="7" height="7"></rect>
+                <rect x="14" y="14" width="7" height="7"></rect>
+                <rect x="3" y="14" width="7" height="7"></rect>
+              </svg>
+            </button>
+            <button class="view-btn" data-layout="list">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="8" y1="6" x2="21" y2="6"></line>
+                <line x1="8" y1="12" x2="21" y2="12"></line>
+                <line x1="8" y1="18" x2="21" y2="18"></line>
+                <line x1="3" y1="6" x2="3.01" y2="6"></line>
+                <line x1="3" y1="12" x2="3.01" y2="12"></line>
+                <line x1="3" y1="18" x2="3.01" y2="18"></line>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <div id="contentGrid" class="content-grid"></div>
+      </div>
+    </main>
+
+    <!-- Modal for article/video details -->
+    <div id="modal" class="modal">
+      <div class="modal-content">
+        <button class="modal-close">&times;</button>
+        <div id="modalBody"></div>
+      </div>
+    </div>
+
+    <script src="app.js"></script>
+    <script>
+      // Check if user is logged in
+      if (localStorage.getItem("userRole") !== "user") {
+        window.location.href = "index.html";
+      }
+
+      let currentView = "all";
+      let currentCategory = "all";
+      let currentLayout = "grid";
+
+      // Navigation view switching
+      const navLinks = document.querySelectorAll(".nav-link");
+      navLinks.forEach((link) => {
+        link.addEventListener("click", () => {
+          navLinks.forEach((l) => l.classList.remove("active"));
+          link.classList.add("active");
+          currentView = link.dataset.view;
+          displayContent();
+        });
+      });
+
+      // Category filtering
+      const categoryBtns = document.querySelectorAll(".category-btn");
+      categoryBtns.forEach((btn) => {
+        btn.addEventListener("click", () => {
+          categoryBtns.forEach((b) => b.classList.remove("active"));
+          btn.classList.add("active");
+          currentCategory = btn.dataset.category;
+          displayContent();
+        });
+      });
+
+      // Layout toggle
+      const viewBtns = document.querySelectorAll(".view-btn");
+      viewBtns.forEach((btn) => {
+        btn.addEventListener("click", () => {
+          viewBtns.forEach((b) => b.classList.remove("active"));
+          btn.classList.add("active");
+          currentLayout = btn.dataset.layout;
+          const contentGrid = document.getElementById("contentGrid");
+          contentGrid.className = currentLayout === "grid" ? "content-grid" : "content-list-view";
+          displayContent();
+        });
+      });
+
+      // Search functionality
+      document.getElementById("searchInput").addEventListener("input", (e) => {
+        displayContent(e.target.value.toLowerCase());
+      });
+
+      // Display content
+      async function displayContent(searchTerm = "") {
+        const articles = await getArticles();
+        const videos = await getVideos();
+        const contentGrid = document.getElementById("contentGrid");
+
+        let filteredArticles = articles;
+        let filteredVideos = videos;
+
+        // Filter by category
+        if (currentCategory !== "all") {
+          filteredArticles = articles.filter((a) => a.category === currentCategory);
+          filteredVideos = videos.filter((v) => v.category === currentCategory);
+        }
+
+        // Filter by search term
+        if (searchTerm) {
+          filteredArticles = filteredArticles.filter(
+            (a) =>
+              a.title.toLowerCase().includes(searchTerm) ||
+              a.author.toLowerCase().includes(searchTerm) ||
+              a.content.toLowerCase().includes(searchTerm),
+          );
+          filteredVideos = filteredVideos.filter(
+            (v) =>
+              v.title.toLowerCase().includes(searchTerm) ||
+              v.creator.toLowerCase().includes(searchTerm) ||
+              v.description.toLowerCase().includes(searchTerm),
+          );
+        }
+
+        let content = [];
+
+        if (currentView === "all" || currentView === "articles") {
+          content = content.concat(filteredArticles.map((a) => ({ ...a, type: "article" })));
+        }
+        if (currentView === "all" || currentView === "videos") {
+          content = content.concat(filteredVideos.map((v) => ({ ...v, type: "video" })));
+        }
+
+        // Sort by date (newest first)
+        content.sort((a, b) => b.id - a.id);
+
+        if (content.length === 0) {
+          contentGrid.innerHTML = '<div class="empty-state"><p>لم يتم العثور على محتوى. حاول تعديل الفلاتر.</p></div>';
+          return;
+        }
+
+        contentGrid.innerHTML = content
+          .map((item) => {
+            if (item.type === "article") {
+              return `
+                        <article class="card" onclick="openArticleModal(${item.id})">
+                            <div class="card-image" style="background-image: url('${item.image}')">
+                                <span class="card-badge">مقال</span>
+                            </div>
+                            <div class="card-content">
+                                <span class="card-category">${item.category}</span>
+                                <h3 class="card-title">${item.title}</h3>
+                                <p class="card-excerpt">${item.content.substring(0, 120)}...</p>
+                                <div class="card-footer">
+                                    <span class="card-author">${item.author}</span>
+                                    <span class="card-date">${item.date}</span>
+                                </div>
+                            </div>
+                        </article>
+                    `;
+            } else {
+              return `
+                        <article class="card" onclick="openVideoModal(${item.id})">
+                            <div class="card-image" style="background-image: url('${item.thumbnail}')">
+                                <span class="card-badge video-badge">فيديو</span>
+                                <div class="play-icon">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="white">
+                                        <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="card-content">
+                                <span class="card-category">${item.category}</span>
+                                <h3 class="card-title">${item.title}</h3>
+                                <p class="card-excerpt">${item.description.substring(0, 120)}...</p>
+                                <div class="card-footer">
+                                    <span class="card-author">${item.creator}</span>
+                                    <span class="card-date">${item.date}</span>
+                                </div>
+                            </div>
+                        </article>
+                    `;
+            }
+          })
+          .join("");
+      }
+
+      // Modal functions
+      const modal = document.getElementById("modal");
+      const modalBody = document.getElementById("modalBody");
+      const closeBtn = document.querySelector(".modal-close");
+
+      closeBtn.addEventListener("click", () => {
+        modal.style.display = "none";
+        document.querySelector(".modal-content").classList.remove("video-modal");
+      });
+
+      window.addEventListener("click", (e) => {
+        if (e.target === modal) {
+          modal.style.display = "none";
+          document.querySelector(".modal-content").classList.remove("video-modal");
+        }
+      });
+
+      async function openArticleModal(id) {
+        const articles = await getArticles();
+        const article = articles.find((a) => a.id === id);
+        if (!article) return;
+
+        document.querySelector(".modal-content").classList.remove("video-modal");
+        modalBody.innerHTML = `
+                <article class="modal-article">
+                    <img src="${article.image}" alt="${article.title}" class="modal-image">
+                    <div class="modal-header">
+                        <span class="modal-category">${article.category}</span>
+                        <h2>${article.title}</h2>
+                        <div class="modal-meta">
+                            <span>بقلم ${article.author}</span>
+                            <span>${article.date}</span>
+                        </div>
+                    </div>
+                    <div class="modal-text">${article.content}</div>
+                </article>
+            `;
+        modal.style.display = "flex";
+      }
+
+      async function openVideoModal(id) {
+        const videos = await getVideos();
+        const video = videos.find((v) => v.id === id);
+        if (!video) return;
+
+        document.querySelector(".modal-content").classList.add("video-modal");
+
+        let embedUrl = video.url;
+        let isDirectVideo =
+          video.isUploaded ||
+          video.url.includes("streamable.com") ||
+          video.url.includes("gofile.io") ||
+          video.url.includes("pixeldrain.com") ||
+          video.url.includes("catbox.moe") ||
+          video.url.includes("imgur.com") ||
+          video.url.includes("cloudinary.com") ||
+          video.url.match(/\.(mp4|webm|ogg|mov)$/i);
+
+        // Check if it's an uploaded video or external embed link
+        if (!isDirectVideo) {
+          // Handle YouTube/Vimeo/Streamable embeds
+          if (video.url.includes("youtube.com") || video.url.includes("youtu.be")) {
+            const videoId = video.url.includes("youtu.be") ? video.url.split("youtu.be/")[1] : new URL(video.url).searchParams.get("v");
+            embedUrl = `https://www.youtube.com/embed/${videoId}`;
+          } else if (video.url.includes("vimeo.com")) {
+            const videoId = video.url.split("vimeo.com/")[1];
+            embedUrl = `https://player.vimeo.com/video/${videoId}`;
+          } else if (video.url.includes("streamable.com")) {
+            const shortcode = video.url.split("streamable.com/")[1];
+            embedUrl = `https://streamable.com/e/${shortcode}`;
+            isDirectVideo = false; // Force iframe embed for Streamable
+          }
+        } else if (video.url.includes("streamable.com")) {
+          // Streamable needs iframe even when detected as "direct"
+          const shortcode = video.url.split("streamable.com/")[1].replace(/^e\//, "");
+          embedUrl = `https://streamable.com/e/${shortcode}`;
+          isDirectVideo = false; // Force iframe for Streamable
+        }
+
+        // Different HTML for direct videos vs embeds
+        if (isDirectVideo) {
+          modalBody.innerHTML = `
+                <article class="modal-video">
+                    <div class="modal-video-player">
+                        <video controls controlsList="nodownload" autoplay style="width: 100%; height: 100%; object-fit: contain; background: #000;">
+                            <source src="${embedUrl}" type="video/mp4">
+                            <source src="${embedUrl}" type="video/webm">
+                            <source src="${embedUrl}">
+                            متصفحك لا يدعم تشغيل الفيديو.
+                        </video>
+                    </div>
+                    <div class="modal-header">
+                        <span class="modal-category">${video.category}</span>
+                        <h2>${video.title}</h2>
+                        <div class="modal-meta">
+                            <span>بواسطة ${video.creator}</span>
+                            <span>${video.date}</span>
+                        </div>
+                    </div>
+                    <div class="modal-text">${video.description}</div>
+                </article>
+            `;
+        } else {
+          modalBody.innerHTML = `
+                <article class="modal-video">
+                    <div class="modal-video-player">
+                        <iframe src="${embedUrl}" frameborder="0" allowfullscreen></iframe>
+                    </div>
+                    <div class="modal-header">
+                        <span class="modal-category">${video.category}</span>
+                        <h2>${video.title}</h2>
+                        <div class="modal-meta">
+                            <span>بواسطة ${video.creator}</span>
+                            <span>${video.date}</span>
+                        </div>
+                    </div>
+                    <div class="modal-text">${video.description}</div>
+                </article>
+            `;
+        }
+        modal.style.display = "flex";
+      }
+
+      // Logout
+      document.getElementById("logoutBtn").addEventListener("click", () => {
+        localStorage.removeItem("userRole");
+        window.location.href = "index.html";
+      });
+
+      // Initial display - wait for Firebase to initialize
+      async function initializeUserPage() {
+        try {
+          // Wait a bit for Firebase to initialize
+          await new Promise((resolve) => setTimeout(resolve, 500));
+          await displayContent();
+        } catch (error) {
+          console.error("Error loading content:", error);
+        } finally {
+          // Hide loading screen
+          const loadingScreen = document.getElementById("loadingScreen");
+          loadingScreen.classList.add("hidden");
+        }
+      }
+
+      initializeUserPage();
+    </script>
+  </body>
+</html>

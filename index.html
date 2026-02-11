@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>مركز المحتوى - تسجيل الدخول</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="login-container">
+      <div class="login-card">
+        <h1>مركز المحتوى</h1>
+        <p class="subtitle">استمتع بتجربة محتوى مخصصة لك</p>
+
+        <div class="role-selector">
+          <button class="role-btn active" data-role="user">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+              <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+            <span>مستخدم</span>
+          </button>
+          <button class="role-btn" data-role="admin">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
+            </svg>
+            <span>مدير</span>
+          </button>
+        </div>
+
+        <form id="loginForm" class="login-form">
+          <div class="input-group">
+            <label for="username">اسم المستخدم</label>
+            <input type="text" id="username" name="username" required placeholder="أدخل اسم المستخدم" />
+          </div>
+
+          <div class="input-group">
+            <label for="password">كلمة المرور</label>
+            <input type="password" id="password" name="password" required placeholder="أدخل كلمة المرور" />
+          </div>
+
+          <button type="submit" class="btn-primary">تسجيل الدخول</button>
+        </form>
+
+        <div class="demo-info">
+          <p><strong>بيانات تجريبية:</strong></p>
+          <p>مدير: admin / admin123</p>
+          <p>مستخدم: user / user123</p>
+        </div>
+      </div>
+    </div>
+
+    <script src="app.js"></script>
+    <script>
+      const roleButtons = document.querySelectorAll(".role-btn");
+      let selectedRole = "user";
+
+      roleButtons.forEach((btn) => {
+        btn.addEventListener("click", () => {
+          roleButtons.forEach((b) => b.classList.remove("active"));
+          btn.classList.add("active");
+          selectedRole = btn.dataset.role;
+        });
+      });
+
+      document.getElementById("loginForm").addEventListener("submit", (e) => {
+        e.preventDefault();
+        const username = document.getElementById("username").value;
+        const password = document.getElementById("password").value;
+
+        // Simple authentication logic
+        if (selectedRole === "admin" && username === "admin" && password === "admin123") {
+          localStorage.setItem("userRole", "admin");
+          window.location.href = "admin.html";
+        } else if (selectedRole === "user" && username === "user" && password === "user123") {
+          localStorage.setItem("userRole", "user");
+          window.location.href = "user.html";
+        } else {
+          alert("بيانات الدخول غير صحيحة. يرجى المحاولة مرة أخرى.");
+        }
+      });
+    </script>
+  </body>
+</html>
