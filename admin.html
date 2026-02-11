@@ -147,9 +147,7 @@
                   accept="video/*"
                   style="display: block; width: 100%; padding: 10px; border: 2px dashed #2563eb; border-radius: 8px; cursor: pointer"
                 />
-                <button type="button" id="uploadVideoBtn" class="btn-secondary" style="width: 100%; margin-top: 10px">
-                  📤 رفع الفيديو
-                </button>
+                <button type="button" id="uploadVideoBtn" class="btn-secondary" style="width: 100%; margin-top: 10px">📤 رفع الفيديو</button>
                 <input type="hidden" id="uploadedVideoUrl" />
                 <div
                   id="uploadSuccess"
@@ -157,9 +155,7 @@
                 >
                   ✅ تم رفع الفيديو بنجاح!
                 </div>
-                <p style="font-size: 0.75rem; color: #64748b; margin-top: 5px">
-                  * حتى 50MB لكل فيديو | 1GB تخزين | مجاني 100% بدون بطاقة
-                </p>
+                <p style="font-size: 0.75rem; color: #64748b; margin-top: 5px">* حتى 50MB لكل فيديو | 1GB تخزين | مجاني 100% بدون بطاقة</p>
               </div>
             </div>
 
@@ -209,39 +205,39 @@
 
       // Supabase Video Upload
       async function uploadVideoFile() {
-        const fileInput = document.getElementById('videoFileInput');
+        const fileInput = document.getElementById("videoFileInput");
         const file = fileInput.files[0];
-        
+
         if (!file) {
-          alert('الرجاء اختيار ملف فيديو');
+          alert("الرجاء اختيار ملف فيديو");
           return;
         }
 
         // Check file size (50MB default, can be increased in Supabase)
         const maxSize = 50 * 1024 * 1024; // 50MB
         if (file.size > maxSize) {
-          alert('حجم الفيديو كبير جداً! الحد الأقصى: 50MB');
+          alert("حجم الفيديو كبير جداً! الحد الأقصى: 50MB");
           return;
         }
 
-        const successDiv = document.getElementById('uploadSuccess');
-        successDiv.style.display = 'none';
+        const successDiv = document.getElementById("uploadSuccess");
+        successDiv.style.display = "none";
 
         try {
           const videoUrl = await uploadVideoToSupabase(file);
-          document.getElementById('uploadedVideoUrl').value = videoUrl;
-          successDiv.style.display = 'block';
-          console.log('Video uploaded:', videoUrl);
+          document.getElementById("uploadedVideoUrl").value = videoUrl;
+          successDiv.style.display = "block";
+          console.log("Video uploaded:", videoUrl);
         } catch (error) {
-          alert('فشل رفع الفيديو: ' + error.message);
+          alert("فشل رفع الفيديو: " + error.message);
         }
       }
 
       // Handle upload button
-      document.addEventListener('DOMContentLoaded', () => {
-        const uploadBtn = document.getElementById('uploadVideoBtn');
+      document.addEventListener("DOMContentLoaded", () => {
+        const uploadBtn = document.getElementById("uploadVideoBtn");
         if (uploadBtn) {
-          uploadBtn.addEventListener('click', uploadVideoFile);
+          uploadBtn.addEventListener("click", uploadVideoFile);
         }
       });
 

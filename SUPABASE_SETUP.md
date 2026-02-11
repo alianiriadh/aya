@@ -1,6 +1,7 @@
 # Supabase Setup - Complete Guide
 
 ## Why Supabase?
+
 ✅ **1GB file storage** (free)
 ✅ **500MB database** (free)
 ✅ **50MB per video** (can be increased)
@@ -29,6 +30,7 @@
 From your Supabase dashboard:
 
 ### Project URL & API Key
+
 1. Click on your project
 2. Go to "Settings" (gear icon) → "API"
 3. Copy these values:
@@ -36,11 +38,12 @@ From your Supabase dashboard:
    - **anon public key:** `eyJhbG...` (long key)
 
 ### Update Your Code
+
 Open `supabase-app.js` (lines 3-4) and update:
 
 ```javascript
-const SUPABASE_URL = 'https://your-project.supabase.co';
-const SUPABASE_ANON_KEY = 'your-anon-key-here';
+const SUPABASE_URL = "https://your-project.supabase.co";
+const SUPABASE_ANON_KEY = "your-anon-key-here";
 ```
 
 ---
@@ -103,6 +106,7 @@ CREATE POLICY "Enable all for videos" ON videos FOR ALL USING (true) WITH CHECK 
 4. Click "Create bucket"
 
 ### Set Storage Policies
+
 1. Click on the `videos` bucket
 2. Go to "Policies" tab
 3. Click "New policy"
@@ -140,6 +144,7 @@ Open `index.html` and replace the script tag with:
 ## Step 7: Deploy to Netlify
 
 1. Commit and push to GitHub:
+
    ```bash
    git add .
    git commit -m "Switch to Supabase"
@@ -156,6 +161,7 @@ Open `index.html` and replace the script tag with:
 ### Default: 50MB per file
 
 ### To Increase (up to 5GB):
+
 1. Go to "Storage" → "Settings"
 2. Under "Upload file size limit"
 3. Change from 50MB to desired size (max 5GB for free tier)
@@ -167,11 +173,11 @@ Open `index.html` and replace the script tag with:
 
 ## Free Tier Limits
 
-| Resource | Limit |
-|----------|-------|
-| Database | 500MB |
-| File Storage | 1GB |
-| Bandwidth | 2GB/month |
+| Resource     | Limit     |
+| ------------ | --------- |
+| Database     | 500MB     |
+| File Storage | 1GB       |
+| Bandwidth    | 2GB/month |
 | API Requests | Unlimited |
 
 **This is perfect for a content hub with 10-20 videos!**
@@ -181,16 +187,19 @@ Open `index.html` and replace the script tag with:
 ## Troubleshooting
 
 ### "Failed to upload video"
+
 - Check storage bucket is public
 - Verify storage policies allow INSERT
 - Check file size is under limit
 
 ### "Cannot save article/video"
+
 - Check database policies allow INSERT
 - Verify tables are created correctly
 - Check browser console for errors
 
 ### "Videos not displaying"
+
 - Verify bucket is public
 - Check video URL in browser
 - Ensure video format is supported (mp4, webm)
@@ -199,14 +208,14 @@ Open `index.html` and replace the script tag with:
 
 ## Advantages Over Firebase + Cloudinary
 
-| Feature | Supabase | Firebase + Cloudinary |
-|---------|----------|----------------------|
-| Setup | 1 service | 2 services |
-| Storage | 1GB | 25GB (Cloudinary) |
-| File Size | 50MB-5GB | 100MB (Cloudinary) |
-| Database | ✅ Included | ✅ Firebase |
-| Credit Card | ❌ Not needed | ❌ Not needed |
-| Complexity | ⭐ Simple | ⭐⭐ More complex |
+| Feature     | Supabase      | Firebase + Cloudinary |
+| ----------- | ------------- | --------------------- |
+| Setup       | 1 service     | 2 services            |
+| Storage     | 1GB           | 25GB (Cloudinary)     |
+| File Size   | 50MB-5GB      | 100MB (Cloudinary)    |
+| Database    | ✅ Included   | ✅ Firebase           |
+| Credit Card | ❌ Not needed | ❌ Not needed         |
+| Complexity  | ⭐ Simple     | ⭐⭐ More complex     |
 
 ---
 
