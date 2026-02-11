@@ -140,9 +140,15 @@
             <!-- File Upload Method -->
             <div id="fileUploadMethod" style="display: none">
               <div class="input-group">
-                <label>رفع ملف الفيديو (Cloudinary - 25GB مجاني)</label>
-                <button type="button" id="uploadCloudinaryBtn" class="btn-secondary" style="width: 100%; margin-top: 10px">
-                  📤 اختر فيديو من جهازك
+                <label>رفع ملف الفيديو (Supabase - 1GB مجاني)</label>
+                <input
+                  type="file"
+                  id="videoFileInput"
+                  accept="video/*"
+                  style="display: block; width: 100%; padding: 10px; border: 2px dashed #2563eb; border-radius: 8px; cursor: pointer"
+                />
+                <button type="button" id="uploadVideoBtn" class="btn-secondary" style="width: 100%; margin-top: 10px">
+                  📤 رفع الفيديو
                 </button>
                 <input type="hidden" id="uploadedVideoUrl" />
                 <div
@@ -151,7 +157,9 @@
                 >
                   ✅ تم رفع الفيديو بنجاح!
                 </div>
-                <p style="font-size: 0.75rem; color: #64748b; margin-top: 5px">* 25GB تخزين مجاني | رابط دائم | مجاني 100% بدون بطاقة ائتمان</p>
+                <p style="font-size: 0.75rem; color: #64748b; margin-top: 5px">
+                  * حتى 50MB لكل فيديو | 1GB تخزين | مجاني 100% بدون بطاقة
+                </p>
               </div>
             </div>
 
@@ -176,7 +184,7 @@
       </div>
     </main>
 
-    <script src="app.js"></script>
+    <script src="supabase-app.js"></script>
     <script>
       // Check if user is admin
       if (localStorage.getItem("userRole") !== "admin") {
@@ -199,52 +207,41 @@
         });
       });
 
-      // Cloudinary Configuration (FREE - 25GB Storage!)
-      // Sign up at cloudinary.com and get your cloud name
-      const CLOUDINARY_CLOUD_NAME = "dwfi8aior"; // ⚠️ Change to YOUR cloud name after signup
-      const CLOUDINARY_UPLOAD_PRESET = "content_hub_videos"; // ⚠️ Change to YOUR upload preset
+      // Supabase Video Upload
+      async function uploadVideoFile() {
+        const fileInput = document.getElementById('videoFileInput');
+        const file = fileInput.files[0];
+        
+        if (!file) {
+          alert('الرجاء اختيار ملف فيديو');
+          return;
+        }
 
-      // Initialize Cloudinary Upload Widget
-      let cloudinaryWidget = null;
+        // Check file size (50MB default, can be increased in Supabase)
+        const maxSize = 50 * 1024 * 1024; // 50MB
+        if (file.size > maxSize) {
+          alert('حجم الفيديو كبير جداً! الحد الأقصى: 50MB');
+          return;
+        }
 
-      function initCloudinaryWidget() {
-        cloudinaryWidget = cloudinary.createUploadWidget(
-          {
-            cloudName: CLOUDINARY_CLOUD_NAME,
-            uploadPreset: CLOUDINARY_UPLOAD_PRESET,
-            sources: ["local", "url", "camera"],
-            resourceType: "video",
-            clientAllowedFormats: ["mp4", "mov", "avi", "wmv", "flv", "webm"],
-            maxFileSize: 100000000, // 100MB per upload
-            multiple: false,
-            folder: "content-hub-videos",
-            cropping: false,
-          },
-          (error, result) => {
-            if (!error && result && result.event === "success") {
-              console.log("Video uploaded to Cloudinary:", result.info);
-              const videoUrl = result.info.secure_url;
-              document.getElementById("uploadedVideoUrl").value = videoUrl;
-              document.getElementById("uploadSuccess").style.display = "block";
-            }
-            if (error) {
-              console.error("Cloudinary upload error:", error);
-              alert("فشل رفع الفيديو: " + error.message);
-            }
-          },
-        );
+        const successDiv = document.getElementById('uploadSuccess');
+        successDiv.style.display = 'none';
+
+        try {
+          const videoUrl = await uploadVideoToSupabase(file);
+          document.getElementById('uploadedVideoUrl').value = videoUrl;
+          successDiv.style.display = 'block';
+          console.log('Video uploaded:', videoUrl);
+        } catch (error) {
+          alert('فشل رفع الفيديو: ' + error.message);
+        }
       }
 
-      // Handle Cloudinary upload button
-      document.addEventListener("DOMContentLoaded", () => {
-        initCloudinaryWidget();
-
-        const uploadBtn = document.getElementById("uploadCloudinaryBtn");
+      // Handle upload button
+      document.addEventListener('DOMContentLoaded', () => {
+        const uploadBtn = document.getElementById('uploadVideoBtn');
         if (uploadBtn) {
-          uploadBtn.addEventListener("click", () => {
-            document.getElementById("uploadSuccess").style.display = "none";
-            cloudinaryWidget.open();
-          });
+          uploadBtn.addEventListener('click', uploadVideoFile);
         }
       });
 

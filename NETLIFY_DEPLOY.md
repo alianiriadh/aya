@@ -11,12 +11,14 @@
 ## Step 1: Setup Cloudinary
 
 ### Create Account
+
 1. Go to [cloudinary.com](https://cloudinary.com)
 2. Click "Sign Up for Free"
 3. Use your email (no credit card needed)
 4. Verify email and login
 
 ### Get Your Credentials
+
 1. From your dashboard, find **"Cloud name"** (top of page)
 2. Go to Settings (gear icon) → Upload tab
 3. Scroll to "Upload presets" → Click "Add upload preset"
@@ -27,17 +29,19 @@
 5. Click "Save"
 
 ### Update Your Code
+
 Open `admin.html` (around line 205) and update:
 
 ```javascript
-const CLOUDINARY_CLOUD_NAME = 'your-cloud-name-here'; // From dashboard
-const CLOUDINARY_UPLOAD_PRESET = 'content_hub'; // The preset you created
+const CLOUDINARY_CLOUD_NAME = "your-cloud-name-here"; // From dashboard
+const CLOUDINARY_UPLOAD_PRESET = "content_hub"; // The preset you created
 ```
 
 Example:
+
 ```javascript
-const CLOUDINARY_CLOUD_NAME = 'dxyz123abc';
-const CLOUDINARY_UPLOAD_PRESET = 'content_hub';
+const CLOUDINARY_CLOUD_NAME = "dxyz123abc";
+const CLOUDINARY_UPLOAD_PRESET = "content_hub";
 ```
 
 ---
@@ -69,6 +73,7 @@ git push origin master
 8. Click "Deploy site"
 
 ### Wait for Deployment
+
 - Takes 30-60 seconds
 - You'll see "Site is live" when done
 - Your URL: `https://random-name-12345.netlify.app`
@@ -101,12 +106,14 @@ git push origin master
 ## Optional: Custom Domain
 
 ### Change Site Name
+
 1. In Netlify dashboard, go to "Site settings"
 2. Click "Change site name"
 3. Enter: `bilel-content-hub` (or any available name)
 4. Your new URL: `https://bilel-content-hub.netlify.app`
 
 ### Add Custom Domain (if you have one)
+
 1. Go to "Domain management"
 2. Click "Add custom domain"
 3. Follow the instructions
@@ -116,6 +123,7 @@ git push origin master
 ## Files Structure (Static Only)
 
 Your deployed site includes:
+
 ```
 ✅ index.html         - Login page
 ✅ admin.html         - Admin panel
@@ -127,6 +135,7 @@ Your deployed site includes:
 ```
 
 **NOT deployed (not needed):**
+
 ```
 ❌ server.js          - Removed
 ❌ package.json       - Removed
@@ -138,18 +147,21 @@ Your deployed site includes:
 ## How It Works
 
 ### User Flow:
+
 1. User visits your Netlify URL
 2. Logs in (data checked in Firebase)
 3. Views content (metadata from Firebase)
 4. Watches videos (streamed from Cloudinary)
 
 ### Admin Flow:
+
 1. Admin uploads video via Cloudinary widget
 2. Cloudinary stores video and returns URL
 3. Admin saves video metadata to Firebase
 4. Users can now see and watch the video
 
 ### No Server Needed Because:
+
 - ✅ HTML/CSS/JS served by Netlify (CDN)
 - ✅ Videos stored on Cloudinary (cloud)
 - ✅ Data stored on Firebase (cloud)
@@ -159,32 +171,36 @@ Your deployed site includes:
 
 ## Advantages of This Setup
 
-| Aspect | Solution | Cost | Limits |
-|--------|----------|------|--------|
-| Hosting | Netlify | Free | 100GB bandwidth/month |
-| Videos | Cloudinary | Free | 25GB storage, 25GB bandwidth |
-| Database | Firebase | Free | 50K reads/day |
-| Total Cost | | **$0** | Perfect for small-medium sites |
+| Aspect     | Solution   | Cost   | Limits                         |
+| ---------- | ---------- | ------ | ------------------------------ |
+| Hosting    | Netlify    | Free   | 100GB bandwidth/month          |
+| Videos     | Cloudinary | Free   | 25GB storage, 25GB bandwidth   |
+| Database   | Firebase   | Free   | 50K reads/day                  |
+| Total Cost |            | **$0** | Perfect for small-medium sites |
 
 ---
 
 ## Troubleshooting
 
 ### "Cloudinary upload not working"
+
 - Check that upload preset is **"Unsigned"**
 - Verify cloud name is correct
 - Check browser console for errors
 
 ### "Videos not playing"
+
 - Cloudinary URLs should start with `https://res.cloudinary.com/`
 - Check video format is supported (mp4, webm)
 - Test the URL directly in browser
 
 ### "Site not updating"
+
 - Clear browser cache
 - In Netlify: "Deploys" → "Trigger deploy" → "Clear cache and deploy"
 
 ### "Firebase not working"
+
 - Check Firebase config in `app.js`
 - Verify Firestore rules allow read/write
 
