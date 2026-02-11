@@ -9,7 +9,7 @@
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-    
+
     <!-- Cloudinary Upload Widget -->
     <script src="https://upload-widget.cloudinary.com/global/all.js" type="text/javascript"></script>
   </head>
@@ -151,9 +151,7 @@
                 >
                   ✅ تم رفع الفيديو بنجاح!
                 </div>
-                <p style="font-size: 0.75rem; color: #64748b; margin-top: 5px">
-                  * 25GB تخزين مجاني | رابط دائم | مجاني 100% بدون بطاقة ائتمان
-                </p>
+                <p style="font-size: 0.75rem; color: #64748b; margin-top: 5px">* 25GB تخزين مجاني | رابط دائم | مجاني 100% بدون بطاقة ائتمان</p>
               </div>
             </div>
 
@@ -201,6 +199,56 @@
         });
       });
 
+      // Cloudinary Configuration (FREE - 25GB Storage!)
+      // Sign up at cloudinary.com and get your cloud name
+      const CLOUDINARY_CLOUD_NAME = 'demo'; // ⚠️ Change to YOUR cloud name after signup
+      const CLOUDINARY_UPLOAD_PRESET = 'ml_default'; // ⚠️ Change to YOUR upload preset
+      
+      // Initialize Cloudinary Upload Widget
+      let cloudinaryWidget = null;
+      
+      function initCloudinaryWidget() {
+        cloudinaryWidget = cloudinary.createUploadWidget(
+          {
+            cloudName: CLOUDINARY_CLOUD_NAME,
+            uploadPreset: CLOUDINARY_UPLOAD_PRESET,
+            sources: ['local', 'url', 'camera'],
+            resourceType: 'video',
+            clientAllowedFormats: ['mp4', 'mov', 'avi', 'wmv', 'flv', 'webm'],
+            maxFileSize: 100000000, // 100MB per upload
+            multiple: false,
+            folder: 'content-hub-videos',
+            cropping: false,
+          },
+          (error, result) => {
+            if (!error && result && result.event === 'success') {
+              console.log('Video uploaded to Cloudinary:', result.info);
+              const videoUrl = result.info.secure_url;
+              document.getElementById('uploadedVideoUrl').value = videoUrl;
+              document.getElementById('uploadSuccess').style.display = 'block';
+            }
+            if (error) {
+              console.error('Cloudinary upload error:', error);
+              alert('فشل رفع الفيديو: ' + error.message);
+            }
+          }
+        );
+      }
+      
+      // Handle Cloudinary upload button
+      document.addEventListener('DOMContentLoaded', () => {
+        initCloudinaryWidget();
+        
+        const uploadBtn = document.getElementById('uploadCloudinaryBtn');
+        if (uploadBtn) {
+          uploadBtn.addEventListener('click', () => {
+            document.getElementById('uploadSuccess').style.display = 'none';
+            cloudinaryWidget.open();
+          });
+        }
+      });
+
+      // Old server upload code (not needed with Cloudinary, but kept as backup)
       // Firebase Storage Configuration (FREE Spark Plan - 1GB Storage!)
       // Custom Server Configuration
       // Change this to your deployed server URL after hosting
